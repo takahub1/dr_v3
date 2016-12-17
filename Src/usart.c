@@ -1,6 +1,6 @@
 #include "usart.h"
 
-#define pLen 200
+#define pLen 150
 #define pDev 50
 
 UART_HandleTypeDef huart1;
@@ -30,17 +30,11 @@ char RecvGPS=0;
 char RecvNRF=0;
 
 char printData[pLen]={0};
-char pDataSpl[4][pDev]={0};
 
 
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart){
-	uint8_t a=0,i=0;
+	uint8_t a=0;
 	for(a=0;a<pLen;a++) printData[a]=0;
-	for(i=0;i<4;i++){
-		for(a=0;a<pDev;a++){
-			pDataSpl[i][a]=0;
-		}
-	}
 }
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 	/* Set transmission flag: transfer complete */
@@ -103,17 +97,20 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 		else if(nrf.mode == 7){
 			if(nrf.reset==7){
 				nrf.roll=atoi(nrf.tmparray);
-//				for(nrf.tmpcnt=0;nrf.tmpcnt<4;nrf.tmpcnt++) nrf.tmparray[nrf.tmpcnt]=0;
-//				nrf.cnt=0;
-//				nrf.reset=8;
+				//				for(nrf.tmpcnt=0;nrf.tmpcnt<4;nrf.tmpcnt++) nrf.tmparray[nrf.tmpcnt]=0;
+				//				nrf.cnt=0;
+				//				nrf.reset=8;
 			}
 			if(RecvNRF == '\t') nrf.mode=8;
-//			if(nrf.cnt<4 ) nrf.tmparray[nrf.cnt++]=RecvNRF;
+			//			if(nrf.cnt<4 ) nrf.tmparray[nrf.cnt++]=RecvNRF;
 		}
 	}
 
 	if(huart->Instance == USART3){
 		i=RecvGPS;
+		//		static uint8_t test[1]={0};
+		//		test[0]=i;
+		//		HAL_UART_Transmit_IT(&huart1,(uint8_t *)test,1);
 		if(i == 'G') GPRMC_flag=1;
 		else if((i == 'N' || i == 'P') && GPRMC_flag == 1) GPRMC_flag = 2;
 		else if(i == 'R' && GPRMC_flag == 2) GPRMC_flag = 3;
@@ -217,6 +214,15 @@ char *getNRFArray(){
 char *getHhmmss(){
 	return hhmmss;
 }
+char *getDdmmyy(){
+	return ddmmyy;
+}
+char *getNorth(){
+	return north;
+}
+char *getEast(){
+	return east;
+}
 
 void setPrintInt16(int16_t data,uint8_t ope){	//ope=0:\t,ope=1:\r\n
 	char tempBuff[16];
@@ -246,17 +252,31 @@ void setPrintChar(char *data,uint8_t ope){
 	strcat(printData,tempBuff);
 }
 
-void trancePrintIt(){
-	uint8_t i=0;
-	for(i=0;i<pDev;i++){
-		pDataSpl[0][i]=printData[i];
-		pDataSpl[1][i]=printData[i+pDev];
-		pDataSpl[2][i]=printData[i+pDev*2];
+void trancePrintIt(uint8_t sd){
+//	static uint16_t file_num=0;
+	static uint8_t lcount=0;
+
+	static char hmsnl[24]={0};
+	int8_t res=sd_Save(printData);
+	HAL_Delay(5);
+	if(lcount++>50){
+		lcount=0;
+		sd_Sync();
+		//			HAL_Delay(5);
+		//			while(sd_open(++file_num)){
+		//				error_mess("f_open_error\r\n");
+		//				sd_Close();
+		//			}
+		//			sd_open(++file_num);// sd_Close();	//error
+	}
+	if(res == 1){	//error
+		sd_Close();
 	}
 
-	HAL_UART_Transmit_IT(&huart1,(uint8_t *)pDataSpl[0],strlen(pDataSpl[0]));
-	HAL_UART_Transmit_IT(&huart1,(uint8_t *)pDataSpl[1],strlen(pDataSpl[1]));
-	HAL_UART_Transmit_IT(&huart1,(uint8_t *)pDataSpl[2],strlen(pDataSpl[2]));
+	sprintf(hmsnl,"%s\t%d\r\n",getHhmmss(),res);
+	HAL_UART_Transmit_IT(&huart1,(uint8_t *)printData,strlen(printData));
+
+
 }
 
 

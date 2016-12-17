@@ -42,7 +42,9 @@ uint16_t spi_receive16(uint8_t sendData1,uint8_t sendData2,uint8_t ss){	//ss=0:m
 	if(ss==0) HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_SET);
 	else HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, GPIO_PIN_SET);
 
-	HAL_Delay(1);
+	uint16_t tickstart = utilGetTick();
+	while((utilGetTick() - tickstart) < 1);
+//	HAL_Delay(1);
 
 	if(ss==0) HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_RESET);
 	else HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, GPIO_PIN_RESET);
@@ -54,7 +56,9 @@ uint16_t spi_receive16(uint8_t sendData1,uint8_t sendData2,uint8_t ss){	//ss=0:m
 	if(ss==0) HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_SET);
 	else HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, GPIO_PIN_SET);
 
-	HAL_Delay(1);
+	tickstart = utilGetTick();
+	while((utilGetTick() - tickstart) < 1);
+//	HAL_Delay(1);
 
 	return recvData[0]<<8 | recvData[1];
 }

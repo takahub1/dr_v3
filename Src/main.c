@@ -32,19 +32,17 @@
  */
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
-#include "fatfs.h"
+
 
 /* USER CODE BEGIN Includes */
-#include <stdarg.h>			//for printv
 #include "spi.h"
 #include "usart.h"
+#include "util.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
 ADC_HandleTypeDef hadc1;
 DMA_HandleTypeDef hdma_adc1;
-
-RNG_HandleTypeDef hrng;
 
 SD_HandleTypeDef hsd;
 HAL_SD_CardInfoTypedef SDCardInfo;
@@ -76,7 +74,6 @@ void Error_Handler(void);
 static void MX_GPIO_Init(void);
 static void MX_DMA_Init(void);
 static void MX_ADC1_Init(void);
-static void MX_RNG_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_SDIO_SD_Init(void);
 static void MX_SPI2_Init(void);
@@ -105,29 +102,12 @@ uint16_t ADC_val=0;
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc){
 	ADC_val=(uint16_t)HAL_ADC_GetValue(&hadc1);
 }
-void printv(const char* format, ...){
-	va_list arg;
-	char mess[32] = {0};
-	va_start(arg, format);
-	vsprintf(mess,format, arg);
-	va_end(arg);
-	HAL_UART_Transmit(&huart1,(uint8_t *)mess, 20, 5000);
-}
-void error_mess(char *mess){
-	printv(mess);
-	HAL_Delay(100);
-}
-
-void sd_Init(char *filename){
-	FATFS FatFs;
-	f_mount(&FatFs,"",0);
-	DIR Dir;
-	f_opendir(&Dir,"");
-	FIL File;
-	while(f_open(&File,filename,FA_CREATE_ALWAYS|FA_WRITE)) error_mess("f_open_error\r\n");
-	f_puts("hogehoge",&File);
-	f_close(&File);
-}
+//uint16_t t3=0;
+//void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
+//	if(htim->Instance == TIM9){
+//		t3++;
+//	}
+//}
 /* USER CODE END 0 */
 
 int main(void)
@@ -149,7 +129,6 @@ int main(void)
 	MX_GPIO_Init();
 	MX_DMA_Init();
 	MX_ADC1_Init();
-	MX_RNG_Init();
 	MX_USART1_UART_Init();
 	MX_SDIO_SD_Init();
 	MX_SPI2_Init();
@@ -167,6 +146,13 @@ int main(void)
 	MX_FATFS_Init();
 
 	/* USER CODE BEGIN 2 */
+	printv("USER CODE BEGIN 2\r\n");
+	char GMS_10Hz[64] = "$PMTK220,100*2F\r\n";
+	HAL_UART_Transmit(&huart3,(uint8_t *)GMS_10Hz, strlen(GMS_10Hz), 5000);
+//		char GMS_br38400[64] = "$PMTK251,38400*27\r\n";
+//		HAL_UART_Transmit(&huart3,(uint8_t *)GMS_br38400, strlen(GMS_br38400), 5000);
+//	__HAL_UART_ENABLE_IT(&huart2, UART_IT_RXNE);
+	__HAL_UART_ENABLE_IT(&huart3, UART_IT_RXNE);
 	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_SET);	//ss
 	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, GPIO_PIN_SET);
 	HAL_TIM_Encoder_Start(&htim3,TIM_CHANNEL_1);
@@ -177,28 +163,30 @@ int main(void)
 	HAL_TIM_Encoder_Start(&htim5,TIM_CHANNEL_2);
 	HAL_TIM_Encoder_Start(&htim8,TIM_CHANNEL_1);
 	HAL_TIM_Encoder_Start(&htim8,TIM_CHANNEL_2);
-	__HAL_UART_ENABLE_IT(&huart2, UART_IT_RXNE);
-	__HAL_UART_ENABLE_IT(&huart3, UART_IT_RXNE);
-	char GMS_10Hz[64] = "$PMTK220,100*2F\r\n";
-	HAL_UART_Transmit(&huart3,(uint8_t *)GMS_10Hz, strlen(GMS_10Hz), 5000);
-//	char GMS_br38400[64] = "$PMTK251,38400*27\r\n";
-//	HAL_UART_Transmit(&huart3,(uint8_t *)GMS_br38400, strlen(GMS_br38400), 5000);
+
+	HAL_TIM_Base_Start_IT(&htim9);
+
 	bmpSetup();
 	while(mpu_test()!=0) error_mess("mpu_error\r\n");
-	sd_Init("test.txt");
 	mpuSetup();
 	HAL_ADC_Start_DMA(&hadc1,(uint32_t*)&ADC_val,1);
 	HAL_ADC_Start(&hadc1);
+	sd_Init();
 	printv("hello\r\n");
-	HAL_Delay(1000);
+	HAL_Delay(500);
+	HAL_GPIO_WritePin(led_GPIO_Port, led_Pin, GPIO_PIN_RESET);
 	/* USER CODE END 2 */
 
 	/* Infinite loop */
+	/* USER CODE BEGIN WHILE */
 	while (1)
 	{
 		/* USER CODE END WHILE */
 
 		/* USER CODE BEGIN 3 */
+		//		setPrintInt16(t3,0);
+		//		setPrintInt16(utilGetTick(),0);
+//		setPrintChar(getDdmmyy(),0);
 		setPrintChar(getHhmmss(),0);
 		setPrintInt16(readAccX(),0);
 		setPrintInt16(readAccY(),0);
@@ -209,20 +197,22 @@ int main(void)
 		setPrintInt16(readTemp(),0);
 		setPrintInt16(bmpReadTemp(),0);
 		setPrintFloat(bmpReadPressure(),0);
-		setPrintInt16(bmpReadAltitude(),0);
-//				setPrintInt16(getNRFMode(),0);
+//		setPrintInt16(bmpReadAltitude(),0);
+//		//				setPrintInt16(getNRFMode(),0);
 		setPrintFloat((float)ADC_val*3.3/4096*3/2,0);
-		setPrintInt16(getNRFThrottle(),0);
-		setPrintInt16(getNRFYaw(),0);
-		setPrintInt16(getNRFPitch(),0);
-		setPrintInt16(getNRFRoll(),0);
-
+//		setPrintInt16(getNRFThrottle(),0);
+//		setPrintInt16(getNRFYaw(),0);
+//		setPrintInt16(getNRFPitch(),0);
+//		setPrintInt16(getNRFRoll(),0);
 		setPrintInt16(TIM3->CNT,0);
 		setPrintInt16(TIM4->CNT,0);
 		setPrintInt16(TIM5->CNT,0);
 		setPrintInt16(TIM8->CNT,1);
-		trancePrintIt();
+		trancePrintIt(0);
 		HAL_Delay(10);
+//				uint16_t tickstart = utilGetTick();
+//				while((utilGetTick() - tickstart) < 100);
+		//		util_Delay(100);
 	}
 	/* USER CODE END 3 */
 
@@ -309,18 +299,6 @@ static void MX_ADC1_Init(void)
 
 }
 
-/* RNG init function */
-static void MX_RNG_Init(void)
-{
-
-	hrng.Instance = RNG;
-	if (HAL_RNG_Init(&hrng) != HAL_OK)
-	{
-		Error_Handler();
-	}
-
-}
-
 /* SDIO init function */
 static void MX_SDIO_SD_Init(void)
 {
@@ -331,7 +309,7 @@ static void MX_SDIO_SD_Init(void)
 	hsd.Init.ClockPowerSave = SDIO_CLOCK_POWER_SAVE_DISABLE;
 	hsd.Init.BusWide = SDIO_BUS_WIDE_1B;
 	hsd.Init.HardwareFlowControl = SDIO_HARDWARE_FLOW_CONTROL_DISABLE;
-	hsd.Init.ClockDiv = 10;
+	hsd.Init.ClockDiv = 50;
 
 }
 
@@ -506,9 +484,9 @@ static void MX_TIM9_Init(void)
 	TIM_ClockConfigTypeDef sClockSourceConfig;
 
 	htim9.Instance = TIM9;
-	htim9.Init.Prescaler = 0;
+	htim9.Init.Prescaler = 9600;
 	htim9.Init.CounterMode = TIM_COUNTERMODE_UP;
-	htim9.Init.Period = 999;
+	htim9.Init.Period = 10;
 	htim9.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
 	if (HAL_TIM_Base_Init(&htim9) != HAL_OK)
 	{
@@ -664,7 +642,7 @@ static void MX_USART1_UART_Init(void)
 {
 
 	huart1.Instance = USART1;
-	huart1.Init.BaudRate = 230400;
+	huart1.Init.BaudRate = 115200;
 	huart1.Init.WordLength = UART_WORDLENGTH_8B;
 	huart1.Init.StopBits = UART_STOPBITS_1;
 	huart1.Init.Parity = UART_PARITY_NONE;
@@ -702,6 +680,7 @@ static void MX_USART3_UART_Init(void)
 {
 
 	huart3.Instance = USART3;
+//	huart3.Init.BaudRate = 9600;
 	huart3.Init.BaudRate = 38400;
 	huart3.Init.WordLength = UART_WORDLENGTH_8B;
 	huart3.Init.StopBits = UART_STOPBITS_1;
@@ -750,7 +729,7 @@ static void MX_GPIO_Init(void)
 	__HAL_RCC_GPIOD_CLK_ENABLE();
 
 	/*Configure GPIO pin Output Level */
-	HAL_GPIO_WritePin(led_GPIO_Port, led_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(led_GPIO_Port, led_Pin, GPIO_PIN_SET);
 
 	/*Configure GPIO pin Output Level */
 	HAL_GPIO_WritePin(GPIOB, mpu_cs_Pin|bme_cs_Pin, GPIO_PIN_RESET);

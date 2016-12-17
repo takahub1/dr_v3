@@ -26,13 +26,15 @@ Src/main.o: ../Src/main.c \
  /home/thinkpot/workspace/dr_v3/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ramfunc.h \
  /home/thinkpot/workspace/dr_v3/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr.h \
  /home/thinkpot/workspace/dr_v3/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h \
- /home/thinkpot/workspace/dr_v3/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rng.h \
  /home/thinkpot/workspace/dr_v3/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_sd.h \
  /home/thinkpot/workspace/dr_v3/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_sdmmc.h \
  /home/thinkpot/workspace/dr_v3/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h \
  /home/thinkpot/workspace/dr_v3/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h \
  /home/thinkpot/workspace/dr_v3/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h \
  /home/thinkpot/workspace/dr_v3/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h \
+ /home/thinkpot/workspace/dr_v3/Inc/spi.h \
+ /home/thinkpot/workspace/dr_v3/Inc/usart.h \
+ /home/thinkpot/workspace/dr_v3/Inc/util.h \
  /home/thinkpot/workspace/dr_v3/Inc/fatfs.h \
  /home/thinkpot/workspace/dr_v3/Middlewares/Third_Party/FatFs/src/ff.h \
  /home/thinkpot/workspace/dr_v3/Middlewares/Third_Party/FatFs/src/integer.h \
@@ -43,7 +45,8 @@ Src/main.o: ../Src/main.c \
  /home/thinkpot/workspace/dr_v3/Middlewares/Third_Party/FatFs/src/ff.h \
  /home/thinkpot/workspace/dr_v3/Middlewares/Third_Party/FatFs/src/drivers/sd_diskio.h \
  /home/thinkpot/workspace/dr_v3/Inc/spi.h \
- /home/thinkpot/workspace/dr_v3/Inc/usart.h
+ /home/thinkpot/workspace/dr_v3/Inc/usart.h \
+ /home/thinkpot/workspace/dr_v3/Inc/util.h
 
 /home/thinkpot/workspace/dr_v3/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 
@@ -99,8 +102,6 @@ Src/main.o: ../Src/main.c \
 
 /home/thinkpot/workspace/dr_v3/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h:
 
-/home/thinkpot/workspace/dr_v3/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rng.h:
-
 /home/thinkpot/workspace/dr_v3/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_sd.h:
 
 /home/thinkpot/workspace/dr_v3/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_sdmmc.h:
@@ -112,6 +113,12 @@ Src/main.o: ../Src/main.c \
 /home/thinkpot/workspace/dr_v3/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h:
 
 /home/thinkpot/workspace/dr_v3/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h:
+
+/home/thinkpot/workspace/dr_v3/Inc/spi.h:
+
+/home/thinkpot/workspace/dr_v3/Inc/usart.h:
+
+/home/thinkpot/workspace/dr_v3/Inc/util.h:
 
 /home/thinkpot/workspace/dr_v3/Inc/fatfs.h:
 
@@ -134,3 +141,5 @@ Src/main.o: ../Src/main.c \
 /home/thinkpot/workspace/dr_v3/Inc/spi.h:
 
 /home/thinkpot/workspace/dr_v3/Inc/usart.h:
+
+/home/thinkpot/workspace/dr_v3/Inc/util.h:

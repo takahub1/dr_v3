@@ -199,7 +199,7 @@ void TIM1_BRK_TIM9_IRQHandler(void)
   /* USER CODE END TIM1_BRK_TIM9_IRQn 0 */
   HAL_TIM_IRQHandler(&htim9);
   /* USER CODE BEGIN TIM1_BRK_TIM9_IRQn 1 */
-
+	utilIncTick();
   /* USER CODE END TIM1_BRK_TIM9_IRQn 1 */
 }
 
@@ -241,9 +241,9 @@ void USART2_IRQHandler(void)
   /* USER CODE END USART2_IRQn 0 */
   HAL_UART_IRQHandler(&huart2);
   /* USER CODE BEGIN USART2_IRQn 1 */
-  static uint8_t recvNRF=0;
-  HAL_UART_Receive_IT(&huart2,&recvNRF,1);
-  updateRecvNRF(recvNRF);
+	static uint8_t recvNRF=0;
+	HAL_UART_Receive_IT(&huart2,&recvNRF,1);
+	updateRecvNRF(recvNRF);
   /* USER CODE END USART2_IRQn 1 */
 }
 
@@ -257,9 +257,9 @@ void USART3_IRQHandler(void)
   /* USER CODE END USART3_IRQn 0 */
   HAL_UART_IRQHandler(&huart3);
   /* USER CODE BEGIN USART3_IRQn 1 */
-  static uint8_t recvGPS=0;
-  HAL_UART_Receive_IT(&huart3,&recvGPS,1);
-  updateRecvGPS(recvGPS);
+	static uint8_t recvGPS=0;
+	HAL_UART_Receive_IT(&huart3,&recvGPS,1);
+	updateRecvGPS(recvGPS);
   /* USER CODE END USART3_IRQn 1 */
 }
 

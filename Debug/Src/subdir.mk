@@ -10,7 +10,8 @@ C_SRCS += \
 ../Src/spi.c \
 ../Src/stm32f4xx_hal_msp.c \
 ../Src/stm32f4xx_it.c \
-../Src/usart.c 
+../Src/usart.c \
+../Src/util.c 
 
 OBJS += \
 ./Src/bsp_driver_sd.o \
@@ -19,7 +20,8 @@ OBJS += \
 ./Src/spi.o \
 ./Src/stm32f4xx_hal_msp.o \
 ./Src/stm32f4xx_it.o \
-./Src/usart.o 
+./Src/usart.o \
+./Src/util.o 
 
 C_DEPS += \
 ./Src/bsp_driver_sd.d \
@@ -28,7 +30,8 @@ C_DEPS += \
 ./Src/spi.d \
 ./Src/stm32f4xx_hal_msp.d \
 ./Src/stm32f4xx_it.d \
-./Src/usart.d 
+./Src/usart.d \
+./Src/util.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
